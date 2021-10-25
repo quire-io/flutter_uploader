@@ -50,6 +50,7 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
   public static final String ARG_REQUEST_TIMEOUT = "requestTimeout";
   public static final String ARG_BINARY_UPLOAD = "binaryUpload";
   public static final String ARG_UPLOAD_REQUEST_TAG = "tag";
+  public static final String ARG_MIME = "mime";
   public static final String ARG_ID = "primaryId";
   public static final String EXTRA_STATUS_CODE = "statusCode";
   public static final String EXTRA_STATUS = "status";
@@ -115,6 +116,7 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
     String parametersJson = getInputData().getString(ARG_DATA);
     String filesJson = getInputData().getString(ARG_FILES);
     tag = getInputData().getString(ARG_UPLOAD_REQUEST_TAG);
+    String mime = getInputData().getString(ARG_MIME);
 
     if (tag == null) {
       tag = getId().toString();
@@ -158,7 +160,7 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
                   null));
         }
 
-        String mimeType = GetMimeType(item.getPath());
+        String mimeType = mime != null ? mime : GetMimeType(item.getPath());
         MediaType contentType = MediaType.parse(mimeType);
         innerRequestBody = RequestBody.create(file, contentType);
       } else {
@@ -170,7 +172,7 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
 
           if (file.exists() && file.isFile()) {
             fileExistsCount++;
-            String mimeType = GetMimeType(item.getPath());
+            String mimeType = mime != null ? mime : GetMimeType(item.getPath());
             MediaType contentType = MediaType.parse(mimeType);
             RequestBody fileBody = RequestBody.create(file, contentType);
             formRequestBuilder.addFormDataPart(item.getFieldname(), file.getName(), fileBody);

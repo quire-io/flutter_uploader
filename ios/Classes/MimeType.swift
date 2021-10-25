@@ -109,24 +109,32 @@ let mimeTypes = [
 
 public struct MimeType {
     let ext: String?
+    let mime: String?
     public var value: String {
         guard let fileExtension: String = ext else {
             return defaultMimeType
+        }
+
+        if let mime = mime {
+            return mime;
         }
 
         let fext = fileExtension.lowercased()
         return mimeTypes.keys.contains(fext) ? mimeTypes[fext]! : defaultMimeType
     }
 
-    public init(path: String) {
+    public init(path: String, mime: String?) {
+        self.mime = mime
         ext = NSString(string: path).pathExtension
     }
 
-    public init(path: NSString) {
+    public init(path: NSString, mime: String?) {
+        self.mime = mime
         ext = path.pathExtension
     }
 
-    public init(url: URL) {
+    public init(url: URL, mime: String?) {
+        self.mime = mime
         ext = url.pathExtension
     }
 }

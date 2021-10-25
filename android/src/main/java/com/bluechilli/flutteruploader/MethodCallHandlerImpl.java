@@ -93,6 +93,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
     Map<String, String> headers = call.argument("headers");
     String tag = call.argument("tag");
     Boolean allowCellular = call.argument("allowCellular");
+    String mime = call.argument("mime");
     if (allowCellular == null) {
       result.error("invalid_flag", "allowCellular must be set", null);
       return;
@@ -129,7 +130,8 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
                 connectionTimeout,
                 false,
                 tag,
-                allowCellular));
+                allowCellular,
+                mime));
 
     WorkManager.getInstance(context)
         .enqueue(request)
@@ -153,6 +155,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
     Map<String, String> headers = call.argument("headers");
     String tag = call.argument("tag");
     Boolean allowCellular = call.argument("allowCellular");
+    String mime = call.argument("mime");
 
     if (allowCellular == null) {
       result.error("invalid_flag", "allowCellular must be set", null);
@@ -184,7 +187,8 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
                 connectionTimeout,
                 true,
                 tag,
-                allowCellular));
+                allowCellular,
+                mime));
 
     WorkManager.getInstance(context)
         .enqueue(request)
@@ -237,7 +241,8 @@ public class MethodCallHandlerImpl implements MethodCallHandler {
             .putString(UploadWorker.ARG_METHOD, task.getMethod())
             .putInt(UploadWorker.ARG_REQUEST_TIMEOUT, task.getTimeout())
             .putBoolean(UploadWorker.ARG_BINARY_UPLOAD, task.isBinaryUpload())
-            .putString(UploadWorker.ARG_UPLOAD_REQUEST_TAG, task.getTag());
+            .putString(UploadWorker.ARG_UPLOAD_REQUEST_TAG, task.getTag())
+            .putString(UploadWorker.ARG_MIME, task.getMime());
 
     List<FileItem> files = task.getFiles();
 

@@ -18,4 +18,5 @@ struct Key {
     static let headers = "headers"
     static let code = "code"
     static let details = "details"
+    static let mime = "mime"
 }

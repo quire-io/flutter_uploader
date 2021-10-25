@@ -10,6 +10,7 @@ abstract class Upload {
     this.headers = const <String, String>{},
     this.tag,
     this.allowCellular = true,
+    this.mime,
   });
 
   /// Upload link
@@ -27,6 +28,8 @@ abstract class Upload {
   /// If uploads are allowed to use cellular connections
   /// Defaults to true. If false, uploads will only use wifi connections
   final bool allowCellular;
+
+  final String? mime;
 }
 
 /// Standard RFC 2388 multipart/form-data upload.
@@ -42,6 +45,7 @@ class MultipartFormDataUpload extends Upload {
     this.files,
     this.data,
     bool allowCellular = true,
+    String? mime,
   })  : assert(files != null || data != null),
         super(
           url: url,
@@ -49,6 +53,7 @@ class MultipartFormDataUpload extends Upload {
           headers: headers,
           tag: tag,
           allowCellular: allowCellular,
+          mime: mime,
         ) {
     // Need to specify either files or data.
     assert(files!.isNotEmpty || data!.isNotEmpty);
@@ -71,12 +76,14 @@ class RawUpload extends Upload {
     String? tag,
     this.path,
     bool allowCellular = true,
+    String? mime,
   }) : super(
           url: url,
           method: method,
           headers: headers,
           tag: tag,
           allowCellular: allowCellular,
+          mime: mime,
         );
 
   /// single file to upload

@@ -105,6 +105,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
         let headers = args["headers"] as? [String: Any?]
         let tag = args["tag"] as? String
         let data = args["data"] as? [String: Any?]
+        let mime = args["mime"] as? String
 
         let httpMethod = method.uppercased()
 
@@ -136,6 +137,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
             parameters: data,
             tag: tag,
             allowCellular: allowCellular,
+            mime: mime,
             completion: { (task, error) in
                 if error != nil {
                     result(error!)
@@ -155,6 +157,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
 
         let headers = args["headers"] as? [String: Any?]
         let tag = args["tag"] as? String
+        let mime = args["mime"] as? String
 
         let httpMethod = method.uppercased()
 
@@ -185,7 +188,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
             return
         }
 
-        binaryUploadTaskWithURLWithCompletion(url: url, file: fileUrl, method: method, headers: headers, tag: tag, allowCellular: allowCellular, completion: { (task, error) in
+        binaryUploadTaskWithURLWithCompletion(url: url, file: fileUrl, method: method, headers: headers, tag: tag, allowCellular: allowCellular, mime: mime, completion: { (task, error) in
             if error != nil {
                 result(error!)
             } else if let uploadTask = task {
@@ -215,10 +218,15 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
                                                        headers: [String: Any?]?,
                                                        tag: String?,
                                                        allowCellular: Bool,
+                                                       mime: String?,
                                                        completion completionHandler:@escaping (URLSessionUploadTask?, FlutterError?) -> Void) {
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = method
         request.setValue("*/*", forHTTPHeaderField: "Accept")
+        
+        if let mime = mime {
+            request.setValue(mime, forHTTPHeaderField: "Content-Type")
+        }
 
         headers?.forEach { (key, value) in
             if let value = value as? String {
@@ -237,6 +245,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
         parameters data: [String: Any?]?,
         tag: String?,
         allowCellular: Bool,
+        mime: String?,
         completion completionHandler:@escaping (URLSessionUploadTask?, FlutterError?) -> Void) {
         var flutterError: FlutterError?
         let fileManager = FileManager.default
@@ -264,7 +273,7 @@ public class SwiftFlutterUploaderPlugin: NSObject, FlutterPlugin {
             let fileManager = FileManager.default
             if fileManager.fileExists(atPath: path, isDirectory: &isDir) {
                 if !isDir.boolValue {
-                    let fileInfo = UploadFileInfo(fieldname: fieldname, path: path)
+                    let fileInfo = UploadFileInfo(fieldname: fieldname, path: path, mime: mime)
                     let filePath = URL(fileURLWithPath: fileInfo.path)
                     formData.append(filePath, withName: fileInfo.fieldname, fileName: filePath.lastPathComponent, mimeType: fileInfo.mimeType)
                     fileCount += 1

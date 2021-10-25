@@ -12,10 +12,9 @@ struct UploadFileInfo {
     let path: String
     let mimeType: String
 
-    init(fieldname: String, path: String) {
+    init(fieldname: String, path: String, mime: String?) {
         self.fieldname = fieldname
         self.path = path
-        let mime = MimeType(url: URL(fileURLWithPath: path))
-        self.mimeType = mime.value
+        self.mimeType = MimeType(url: URL(fileURLWithPath: path), mime: mime).value
     }
 }
